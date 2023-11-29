@@ -1,15 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package view;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.Students;
+import service.QuanLyDiem_Service;
+import service.QuanLySinhVien_Service;
 
 /**
  *
@@ -20,10 +29,16 @@ public class QuanLySinhVien extends javax.swing.JFrame {
     /**
      * Creates new form QuanLySinhVien
      */
-    String strHinhAnh;
+    List<Students> listStudents = new ArrayList<>();
+    QuanLySinhVien_Service qlsv = new QuanLySinhVien_Service();
+    int index = -1;
+    byte[] imageData;
+
     public QuanLySinhVien() {
         initComponents();
         addIcon();
+        listStudents = qlsv.getAll();
+        fillToTable(listStudents);
     }
 
     private void addIcon() {
@@ -33,6 +48,106 @@ public class QuanLySinhVien extends javax.swing.JFrame {
         btnDelete.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/icon/delete-file-icon.png"))));
         btnUpdate.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/icon/icons8-update-32.png")).getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
 
+    }
+
+    private void fillToTable(List<Students> listSV) {
+        DefaultTableModel dtm = (DefaultTableModel) tblSinhVien.getModel();
+        dtm.setRowCount(0);
+        for (Students sv : listSV) {
+            dtm.addRow(new Object[]{sv.getMaSV(), sv.getHoTen(), sv.getEmail(), sv.getSoDT(), sv.getGioTinh(), sv.getDiaChi(), sv.getHinh()});
+
+        }
+    }
+
+    private Students readFrom() {
+        String maSV = txtMaSV.getText().trim();
+        String hoTen = txtHoTen.getText().trim();
+        String email = txtEmail.getText().trim();
+        String soDT = txtSoDT.getText().trim();;
+
+        int gioiTinh = (rdoNam.isSelected()) ? 1 : 0;
+        String diaChi = txtareaDiaChi.getText().trim();
+        byte[] hinh = imageData;
+        if (maSV.equals("") || hoTen.equals("") || email.equals("") || soDT.equals("") || diaChi.equals("")) {
+            JOptionPane.showMessageDialog(this, "không được để trống");
+            return null;
+        }
+        try {
+            soDT = txtSoDT.getText().trim();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "số điện thoại phải là số  nhỏ hơn 12 số");
+            return null;
+        }
+
+        return new Students(maSV, hoTen, email, soDT, gioiTinh, diaChi, hinh);
+    }
+
+    private void showDetail(int index) {
+        txtMaSV.setText(tblSinhVien.getValueAt(index, 0).toString());
+        txtHoTen.setText(tblSinhVien.getValueAt(index, 1).toString());
+        txtEmail.setText(tblSinhVien.getValueAt(index, 2).toString());
+        txtSoDT.setText(tblSinhVien.getValueAt(index, 3).toString());
+        if (tblSinhVien.getValueAt(index, 4).equals(1)) {
+            rdoNam.setSelected(true);
+        } else {
+            rdoNu.setSelected(true);
+        }
+        txtareaDiaChi.setText(tblSinhVien.getValueAt(index, 5).toString());
+
+        byte[] img = (byte[]) tblSinhVien.getValueAt(index, 6);
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(img);
+            BufferedImage image = ImageIO.read(bais);
+            //thay đổi kích thước từ một ảnh
+            Image hinhSua = image.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+
+            ImageIcon icon = new ImageIcon(hinhSua);
+
+            btnAnh.setText("");
+            btnAnh.setIcon(icon);
+        } catch (Exception e) {
+            btnAnh.setText("ảnh lỗi");
+            btnAnh.setIcon(null);
+        }
+
+//        byte[] img = (byte[]) tblSinhVien.getValueAt(index, 6);
+//        try {
+//            ByteArrayInputStream bais = new ByteArrayInputStream(img);
+//            BufferedImage originalImage = ImageIO.read(bais);
+//
+//            // Kích thước mới
+//            int newWidth = 150;
+//            int newHeight = 150;
+//
+//            // Thay đổi kích thước hình ảnh
+//            Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+//
+//            // Tạo BufferedImage mới từ hình ảnh đã thay đổi kích thước
+//            BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+//            Graphics2D graphics = resizedImage.createGraphics();
+//            graphics.drawImage(scaledImage, 0, 0, null);
+//            graphics.dispose();
+//
+//            // Tạo ImageIcon từ BufferedImage đã thay đổi kích thước
+//            ImageIcon icon = new ImageIcon(scaledImage);
+//
+//            btnAnh.setText("");
+//            btnAnh.setIcon(icon);
+//        } catch (Exception e) {
+//            btnAnh.setText("ảnh lỗi");
+//            btnAnh.setIcon(null);
+//        }
+    }
+
+    private void xoaFrom() {
+        txtHoTen.setText("");
+        txtMaSV.setText("");
+        txtEmail.setText("");
+        txtSoDT.setText("");
+        txtareaDiaChi.setText("");
+        rdoNam.setSelected(true);
+        btnAnh.setText("thêm ảnh");
+        btnAnh.setIcon(null);
     }
 
     /**
@@ -81,6 +196,11 @@ public class QuanLySinhVien extends javax.swing.JFrame {
                 "Mã SV", "Họ Tên", "Email", "Số ĐT", "Giới tính", "Địa Chỉ", "Hình"
             }
         ));
+        tblSinhVien.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSinhVienMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblSinhVien);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -116,12 +236,32 @@ public class QuanLySinhVien extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txtareaDiaChi);
 
         btnNew.setText("New");
+        btnNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnSave.setText("Save");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnAnh.setText("Ảnh");
         btnAnh.addActionListener(new java.awt.event.ActionListener() {
@@ -248,7 +388,8 @@ public class QuanLySinhVien extends javax.swing.JFrame {
             dlg.showOpenDialog(null);
             File file = dlg.getSelectedFile();
             Image img = ImageIO.read(file);
-            strHinhAnh = file.getName();
+            imageData = Files.readAllBytes(Path.of(dlg.getSelectedFile().getAbsolutePath()));
+            String strHinhAnh = file.getName();
             ImageIcon icon = new ImageIcon(img);
             btnAnh.setText("");
             btnAnh.setIcon(icon);
@@ -256,6 +397,83 @@ public class QuanLySinhVien extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btnAnhActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+        if (index < 0) {
+            if (readFrom() == null) {
+                return;
+            }
+            if (qlsv.insertSV(readFrom()) > 0) {
+
+                JOptionPane.showMessageDialog(this, "thêm thành công");
+                fillToTable(qlsv.getAll());
+            } else {
+                JOptionPane.showMessageDialog(this, "thêm thất bại, mã sinh viên đã tồn tại");
+            }
+            index = 0;
+        } else {
+            if (qlsv.upadateSV(readFrom()) > 0) {
+                JOptionPane.showMessageDialog(this, "lưu thành công");
+                fillToTable(qlsv.getAll());
+            } else {
+                JOptionPane.showMessageDialog(this, "lưu thất bại");
+            }
+        }
+
+
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void tblSinhVienMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSinhVienMouseClicked
+        // TODO add your handling code here:
+        index = tblSinhVien.getSelectedRow();
+        if (index >= 0) {
+            showDetail(index);
+        }
+    }//GEN-LAST:event_tblSinhVienMouseClicked
+
+    private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
+        // TODO add your handling code here:
+        index = -1;
+        xoaFrom();
+    }//GEN-LAST:event_btnNewActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+        index = tblSinhVien.getSelectedRow();
+
+        if (index >= 0) {
+            if (readFrom() == null) {
+                return;
+            }
+            if (qlsv.upadateSV(readFrom()) > 0) {
+                JOptionPane.showMessageDialog(this, "sửa thành công");
+                fillToTable(qlsv.getAll());
+            } else {
+
+                JOptionPane.showMessageDialog(this, "sủa thất bại, mã sv ko tồn tại");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "chưa chọn dòng");
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        index = tblSinhVien.getSelectedRow();
+
+        if (index >= 0) {
+            String ma = (String) tblSinhVien.getValueAt(index, 0);
+            if (qlsv.deleteSV(ma) > 0) {
+                JOptionPane.showMessageDialog(this, "xóa thành công sv" + ma);
+                fillToTable(qlsv.getAll());
+            } else {
+                JOptionPane.showMessageDialog(this, "xóa thất bại, ko tìm thấy mã sv");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "chưa chọn dòng cần xóa");
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments

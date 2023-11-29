@@ -4,6 +4,12 @@
  */
 package view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.JOptionPane;
+import service.Login_Service;
+
 /**
  *
  * @author admin
@@ -13,8 +19,41 @@ public class Login extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
+    List<model.Login> listUser = new ArrayList<>();
+    Login_Service lg = new Login_Service();
+
     public Login() {
         initComponents();
+        listUser = lg.getAll();
+    }
+
+    private void phanQuyen() {
+        String userName = txtUserName.getText().trim();
+        char[] passWord = txtPassword.getPassword();
+        System.out.println(passWord);
+        System.out.println(userName);
+        String pas = new String(passWord);
+
+        for (int i = 0; i < listUser.size(); i++) {
+            if (listUser.get(i).getUserName().equals(userName)
+                    && listUser.get(i).getPassWord().equals(pas)
+                    && listUser.get(i).getRole().equalsIgnoreCase("giảng viên")) {
+                MainQuanLyDiem diem = new MainQuanLyDiem();
+                diem.setVisible(true);
+                dispose();
+                return;
+
+            }else if (listUser.get(i).getUserName().equals(userName)
+                    && listUser.get(i).getPassWord().equals(pas)
+                    && listUser.get(i).getRole().equalsIgnoreCase("cán bộ đào tạo")) {
+                QuanLySinhVien sv = new QuanLySinhVien();
+                sv.setVisible(true);
+                dispose();
+                return;
+                
+            }
+        }
+        JOptionPane.showMessageDialog(this, "sai tên đăng nhập hoặc mật khẩu");
     }
 
     /**
@@ -43,8 +82,18 @@ public class Login extends javax.swing.JFrame {
         jLabel2.setText("Password");
 
         btnLogin.setText("Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         btnCancel.setText("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -105,6 +154,16 @@ public class Login extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        // TODO add your handling code here:
+        phanQuyen();
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments

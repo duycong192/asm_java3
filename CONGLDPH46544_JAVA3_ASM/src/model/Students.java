@@ -8,12 +8,12 @@ public class Students {
     private String soDT;
     private int gioTinh;
     private String diaChi;
-    private String hinh;
+    private byte[] hinh;
 
     public Students() {
     }
 
-    public Students(String maSV, String hoTen, String email, String soDT, int gioTinh, String diaChi, String hinh) {
+    public Students(String maSV, String hoTen, String email, String soDT, int gioTinh, String diaChi, byte[] hinh) {
         this.maSV = maSV;
         this.hoTen = hoTen;
         this.email = email;
@@ -71,11 +71,11 @@ public class Students {
         this.diaChi = diaChi;
     }
 
-    public String getHinh() {
+    public byte[] getHinh() {
         return hinh;
     }
 
-    public void setHinh(String hinh) {
+    public void setHinh(byte[] hinh) {
         this.hinh = hinh;
     }
 
@@ -83,5 +83,9 @@ public class Students {
     public String toString() {
         return "Students{" + "maSV=" + maSV + ", hoTen=" + hoTen + ", email=" + email + ", soDT=" + soDT + ", gioTinh=" + gioTinh + ", diaChi=" + diaChi + ", hinh=" + hinh + '}';
     }
+    
 
+  
+
+  
 }

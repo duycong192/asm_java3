@@ -4,15 +4,32 @@ public class Grade {
 
     private int id;
     private String maSV;
-    private int tiengAnh;
-    private int tinHoc;
-    private int GDTC;
+    private double tiengAnh;
+    private double tinHoc;
+    private double GDTC;
+    private String hoTen;
 
     public Grade() {
     }
 
-    public Grade(int id, String maSV, int tiengAnh, int tinHoc, int GDTC) {
+    public Grade(int id, String maSV, double tiengAnh, double tinHoc, double GDTC, String hoTen) {
         this.id = id;
+        this.maSV = maSV;
+        this.tiengAnh = tiengAnh;
+        this.tinHoc = tinHoc;
+        this.GDTC = GDTC;
+        this.hoTen = hoTen;
+    }
+
+    public Grade(int id, String maSV, double tiengAnh, double tinHoc, double GDTC) {
+        this.id = id;
+        this.maSV = maSV;
+        this.tiengAnh = tiengAnh;
+        this.tinHoc = tinHoc;
+        this.GDTC = GDTC;
+    }
+
+    public Grade(String maSV, double tiengAnh, double tinHoc, double GDTC) {
         this.maSV = maSV;
         this.tiengAnh = tiengAnh;
         this.tinHoc = tinHoc;
@@ -35,28 +52,43 @@ public class Grade {
         this.maSV = maSV;
     }
 
-    public int getTiengAnh() {
+    public double getTiengAnh() {
         return tiengAnh;
     }
 
-    public void setTiengAnh(int tiengAnh) {
+    public void setTiengAnh(double tiengAnh) {
         this.tiengAnh = tiengAnh;
     }
 
-    public int getTinHoc() {
+    public double getTinHoc() {
         return tinHoc;
     }
 
-    public void setTinHoc(int tinHoc) {
+    public void setTinHoc(double tinHoc) {
         this.tinHoc = tinHoc;
     }
 
-    public int getGDTC() {
+    public double getGDTC() {
         return GDTC;
     }
 
-    public void setGDTC(int GDTC) {
+    public void setGDTC(double GDTC) {
         this.GDTC = GDTC;
+    }
+
+    public String getHoTen() {
+        return hoTen;
+    }
+
+    public void setHoTen(String hoTen) {
+        this.hoTen = hoTen;
+    }
+    
+
+    
+
+    public double getDiemTB() {
+        return (tiengAnh + tinHoc + GDTC) / 3;
     }
 
     @Override

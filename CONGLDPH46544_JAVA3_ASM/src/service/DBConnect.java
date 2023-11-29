@@ -33,11 +33,11 @@ public class DBConnect {
             }
             CONNECT_STRING = connectStringBuilder.toString();
             System.out.println("Connect String có dạng: " + CONNECT_STRING);
-           
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBConnect.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     public static Connection getConnection() {
